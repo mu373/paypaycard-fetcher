@@ -1,0 +1,14 @@
+version: "3"
+services:
+  chrome:
+    image: selenium/standalone-chrome:4.1.2-20220217
+    shm_size: 2gb
+    ports:
+      - "4444:4444"
+  app:
+    build: ./app
+    volumes:
+      - ./app:/app
+    environment:
+      SELENIUM_ENDPOINT: http://chrome:4444/wd/hub
+    tty: true
