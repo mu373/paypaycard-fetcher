@@ -1,3 +1,4 @@
 app/config.py
 __pycache__/
 *.tsv
+data/
