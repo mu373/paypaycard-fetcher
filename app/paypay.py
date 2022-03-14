@@ -19,12 +19,12 @@ from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium.webdriver.common.by import By
 
 def start_driver():
-options = webdriver.ChromeOptions()
-options.add_argument('--user-agent=Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0 Mobile/15E148 Safari/604.1')
-driver = webdriver.Remote(
-        command_executor=os.environ['SELENIUM_ENDPOINT'],
-        options = options
-)
+    options = webdriver.ChromeOptions()
+    options.add_argument('--user-agent=Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0 Mobile/15E148 Safari/604.1')
+    driver = webdriver.Remote(
+            command_executor=os.environ['SELENIUM_ENDPOINT'],
+            options = options
+    )
     print("Starting driver...")
     return driver
 
@@ -84,7 +84,7 @@ def get_monthly_detail(driver, target_month):
 def main():
     try:
         driver = start_driver()
-        login(driver)
+        login(driver=driver)
 
         target_month = args.month
         result_list = get_monthly_detail(driver=driver, target_month=target_month)
