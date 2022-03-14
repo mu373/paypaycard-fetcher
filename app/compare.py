@@ -16,7 +16,7 @@ parser.add_argument('-d', '--delete-old-file', action='store_true', help="Delete
 args = parser.parse_args()
 
 month = args.month
-asset_name = "PayPayカード"
+asset_name = "PayPayカード" # MoneyForwardでの登録名
 
 import pathlib
 import pprint
@@ -84,6 +84,6 @@ def delete_old_file():
 
 if __name__ == "__main__":
     df = load_data()
-    print(df)
+    # print(df)
     import_to_moneyforward(df)
     delete_old_file()
