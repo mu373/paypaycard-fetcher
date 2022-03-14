@@ -1,5 +1,5 @@
-import os
 import sys
+import subprocess
 from io import StringIO
 import pandas as pd
 import argparse
@@ -45,13 +45,14 @@ def get_diff(old_file, new_file):
     diff {old} {new} | grep "^< " | sed "s/< //"
     """.format(new=new_file, old=old_file)
 
-    print(shell_command)
+    diff_lines = subprocess.check_output(shell_command, shell=True, text=True)
+    line_count = subprocess.check_output('wc -l', shell=True, input=diff_lines, text=True)
+    line_count = line_count.rstrip()
 
-    stream = os.popen(shell_command)
-    diff_lines = stream.read()
+    if (line_count) == "0":
+        sys.exit("No diff")
+
     diff_lines = StringIO(diff_lines)
-
-
     return diff_lines
 
 def import_to_moneyforward(df):
