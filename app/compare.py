@@ -1,3 +1,4 @@
+import os
 import sys
 import subprocess
 from io import StringIO
@@ -11,6 +12,7 @@ import moneyforward as mf
 # Parse arguments
 parser = argparse.ArgumentParser(description='Retrieves expense information of PayPay card')
 parser.add_argument('-m', '--month', required=True, help="Month, in YYYYMM format")
+parser.add_argument('-d', '--delete-old-file', action='store_true', help="Delete old file after importing to MoneyForward")
 args = parser.parse_args()
 
 month = args.month
@@ -64,7 +66,24 @@ def import_to_moneyforward(df):
     finally:
         driver.quit()
 
+
+def delete_old_file():
+
+    if args.delete_old_file == True:
+
+        data_dir = pathlib.Path('/data')
+        file_list = data_dir.glob('paypay_{}*.tsv'.format(month))
+
+        file_list_str = [str(p.resolve()) for p in file_list]
+        file_list_str = sorted(file_list_str, reverse=True)
+
+        # Delete only when there is more than one file
+        if len(file_list_str) > 1:
+            old_file = file_list_str[0]
+            os.remove(old_file)
+
 if __name__ == "__main__":
     df = load_data()
     print(df)
-    import_to_moneyforward(df)
+    # import_to_moneyforward(df)
+    delete_old_file()
