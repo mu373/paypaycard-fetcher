@@ -27,7 +27,7 @@ Scheduling with `cron`
 
 ```crontab
 # Schedule to run at 06:02 and 18:02 everyday
-2 6,18 * * * docker-compose -f ~/paypaycard-fetcher/docker-compose.yml run python python run.py
+2 6,18 * * * docker-compose -f ~/paypaycard-fetcher/docker-compose.yml exec app python run.py
 ```
 
 ## Data sample
