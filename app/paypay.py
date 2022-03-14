@@ -71,19 +71,22 @@ def get_monthly_detail(target_month, driver):
 
     return(result_list)
 
+def main():
+    try:
+        login(driver)
 
-try:
-    login(driver)
+        target_month = "202203"
+        result_list = get_monthly_detail(target_month, driver)
 
-    target_month = "202203"
-    result_list = get_monthly_detail(target_month, driver)
+        column_name = ['store_name', 'date', 'expense']
+        df = pd.DataFrame(result_list, columns=column_name)
 
-    column_name = ['store_name', 'date', 'expense']
-    df = pd.DataFrame(result_list, columns=column_name)
+        current_time = get_current_time()
 
-    current_time = get_current_time()
+        filename="../data/paypay_{}_{}.tsv".format(target_month, current_time)
+        df.to_csv(filename, sep='\t', index=False)
+    finally:
+        driver.quit()
 
-    filename="../data/paypay_{}_{}.tsv".format(target_month, current_time)
-    df.to_csv(filename, sep='\t', index=False)
-finally:
-    driver.quit()
+if __name__ == "__main__":
+    main()
