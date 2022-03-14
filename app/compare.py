@@ -52,7 +52,7 @@ def get_diff(old_file, new_file):
     line_count = line_count.rstrip()
 
     if (line_count) == "0":
-        sys.exit("No diff")
+        sys.exit("No diff found.")
 
     diff_lines = StringIO(diff_lines)
     return diff_lines
