@@ -1,4 +1,5 @@
 import os
+import sys
 import time
 import re
 import pandas as pd
@@ -17,6 +18,7 @@ args = parser.parse_args()
 from selenium import webdriver
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium.webdriver.common.by import By
+from selenium.common.exceptions import NoSuchElementException
 
 def start_driver():
     options = webdriver.ChromeOptions()
@@ -59,7 +61,11 @@ def get_monthly_detail(driver, target_month):
     time.sleep(10)
     print("page title: {}".format(driver.title))
 
-    usage_ul = driver.find_element(By.CLASS_NAME, "index_ListSettlement_NIWTA")
+    try:
+        usage_ul = driver.find_element(By.CLASS_NAME, "index_ListSettlement_NIWTA")
+    except NoSuchElementException:
+        sys.exit("No statement was found for the month.")
+    
     usage_li = usage_ul.find_elements(By.CLASS_NAME, "index_ListSettlement__list_10XmM")
     result_list = []
 
