@@ -85,5 +85,5 @@ def delete_old_file():
 if __name__ == "__main__":
     df = load_data()
     print(df)
-    # import_to_moneyforward(df)
+    import_to_moneyforward(df)
     delete_old_file()
