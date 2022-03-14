@@ -31,8 +31,8 @@ def load_data():
         data = file_list_str[0]
         df = pd.read_csv(data, sep="\t")
     else:
-        old_file = file_list_str[0]
-        new_file = file_list_str[1]
+        new_file = file_list_str[0]
+        old_file = file_list_str[1]
         data = get_diff(old_file=old_file, new_file=new_file)
         columns = ["store_name", "date", "expense"]
         df = pd.read_csv(data, sep="\t", header=None, names=columns)
@@ -42,7 +42,7 @@ def load_data():
 
 def get_diff(old_file, new_file):
     shell_command = """
-    diff {old} {new} | grep "^< " | sed "s/< //"
+    diff {new} {old} | grep "^< " | sed "s/< //"
     """.format(new=new_file, old=old_file)
 
     diff_lines = subprocess.check_output(shell_command, shell=True, text=True)
