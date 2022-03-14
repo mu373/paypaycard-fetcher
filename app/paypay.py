@@ -35,7 +35,7 @@ def login(driver):
 
 def format_date(date_list):
     # convert date to YYYY-MM-DD
-    date_formatted = "{y}-{m}-{d}".format(
+    date_formatted = "{y}/{m}/{d}".format(
         y=date_list[0],
         m=date_list[1].zfill(2),
         d=date_list[2].zfill(2)
