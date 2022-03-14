@@ -2,6 +2,7 @@ import os
 import time
 import re
 import pandas as pd
+import datetime
 from config import *
 
 # Import Selenium
@@ -17,6 +18,10 @@ driver = webdriver.Remote(
 )
 
 print("Starting driver")
+
+def get_current_time():
+    now = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9)))
+    return now.strftime('%Y%m%d%H%M%S')
 
 def login(driver):
     driver.get("https://login.yahoo.co.jp/config/login")
@@ -76,7 +81,9 @@ try:
     column_name = ['store_name', 'date', 'expense']
     df = pd.DataFrame(result_list, columns=column_name)
 
-    filename="paypay_{}.tsv".format(target_month)
+    current_time = get_current_time()
+
+    filename="../data/paypay_{}_{}.tsv".format(target_month, current_time)
     df.to_csv(filename, sep='\t', index=False)
 finally:
     driver.quit()
