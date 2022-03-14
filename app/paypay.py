@@ -3,7 +3,15 @@ import time
 import re
 import pandas as pd
 import datetime
+import argparse
+
 from config import *
+
+
+# Parse arguments
+parser = argparse.ArgumentParser(description='Retrieves expense information of PayPay card')
+parser.add_argument('-m', '--month', required=True, help="Month, in YYYYMM format")
+args = parser.parse_args()
 
 # Import Selenium
 from selenium import webdriver
@@ -75,7 +83,7 @@ def main():
     try:
         login(driver)
 
-        target_month = "202203"
+        target_month = args.month
         result_list = get_monthly_detail(target_month, driver)
 
         column_name = ['store_name', 'date', 'expense']
