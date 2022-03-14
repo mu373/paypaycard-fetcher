@@ -2,3 +2,4 @@ app/config.py
 __pycache__/
 *.tsv
 data/
+!data/paypay_sample.tsv
