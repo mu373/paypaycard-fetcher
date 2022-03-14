@@ -9,6 +9,7 @@ services:
     build: ./app
     volumes:
       - ./app:/app
+      - ./data:/data
     environment:
       SELENIUM_ENDPOINT: http://chrome:4444/wd/hub
     tty: true
