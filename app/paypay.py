@@ -18,14 +18,16 @@ from selenium import webdriver
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium.webdriver.common.by import By
 
+def start_driver():
 options = webdriver.ChromeOptions()
 options.add_argument('--user-agent=Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0 Mobile/15E148 Safari/604.1')
 driver = webdriver.Remote(
         command_executor=os.environ['SELENIUM_ENDPOINT'],
         options = options
 )
+    print("Starting driver...")
+    return driver
 
-print("Starting driver")
 
 def get_current_time():
     now = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9)))
@@ -50,7 +52,7 @@ def format_date(date_list):
     )
     return(date_formatted)
 
-def get_monthly_detail(target_month, driver):
+def get_monthly_detail(driver, target_month):
     # showSt: state (0=未確定、2=確定）
     monthly_detail_url = "https://www.paypay-card.co.jp/member/statement/monthly?targetYm={}".format(target_month)
     driver.get(monthly_detail_url)
@@ -81,10 +83,11 @@ def get_monthly_detail(target_month, driver):
 
 def main():
     try:
+        driver = start_driver()
         login(driver)
 
         target_month = args.month
-        result_list = get_monthly_detail(target_month, driver)
+        result_list = get_monthly_detail(driver=driver, target_month=target_month)
 
         column_name = ['store_name', 'date', 'expense']
         df = pd.DataFrame(result_list, columns=column_name)
