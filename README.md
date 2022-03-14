@@ -30,6 +30,11 @@ Scheduling with `cron`
 2 6,18 * * * docker-compose -f ~/docker/paypyacard-fetcher/docker-compose.yml run python python run.py
 ```
 
+## Data sample
+- See [data/paypay_sample.tsv](https://github.com/mu373/paypaycard-fetcher/blob/master/data/paypay_sample.tsv)
+- File format: tab-separated values (TSV)
+- Columns: `store_name`, `date`, `expense`
+
 ## Preparation
 - Add `PayPay card` as a new asset in MoneyForward ME
     - [口座一覧](https://moneyforward.com/accounts/service_list) > 金融機関追加 > その他保有資産
