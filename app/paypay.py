@@ -25,10 +25,10 @@ def get_current_time():
 
 def login(driver):
     driver.get("https://login.yahoo.co.jp/config/login")
-    driver.find_element(By.ID, "username").send_keys(username)
+    driver.find_element(By.ID, "username").send_keys(paypay_username)
     driver.find_element(By.ID, "btnNext").click()
     time.sleep(1)
-    driver.find_element(By.ID, "passwd").send_keys(password)
+    driver.find_element(By.ID, "passwd").send_keys(paypay_password)
     driver.find_element(By.ID, "btnSubmit").click()
     print("logging in...")
     time.sleep(1)
