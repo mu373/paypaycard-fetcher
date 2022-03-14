@@ -40,7 +40,7 @@ def login(driver):
     time.sleep(1)
     driver.find_element(By.ID, "passwd").send_keys(paypay_password)
     driver.find_element(By.ID, "btnSubmit").click()
-    print("logging in...")
+    print("Logging in...")
     time.sleep(1)
 
 def format_date(date_list):
