@@ -52,6 +52,7 @@ def get_diff(old_file, new_file):
     line_count = line_count.rstrip()
 
     if (line_count) == "0":
+        delete_old_file()
         sys.exit("No diff found.")
 
     diff_lines = StringIO(diff_lines)
@@ -63,6 +64,7 @@ def import_to_moneyforward(df):
         mf.login(driver=driver, username=mf_username, password=mf_password)
         mf.add_expense(driver=driver, asset_name=asset_name, df=df)
         mf.logout(driver=driver)
+        delete_old_file()
     finally:
         driver.quit()
 
@@ -72,7 +74,7 @@ def delete_old_file():
     if args.delete_old_file == True:
 
         data_dir = pathlib.Path('/data')
-        file_list = data_dir.glob('paypay_{}*.tsv'.format(month))
+        file_list = data_dir.glob('paypay_{}_*.tsv'.format(month))
 
         file_list_str = [str(p.resolve()) for p in file_list]
         file_list_str = sorted(file_list_str, reverse=True)
@@ -80,10 +82,10 @@ def delete_old_file():
         # Delete only when there is more than one file
         if len(file_list_str) > 1:
             old_file = file_list_str[1]
+            print("Deleting {}".format(old_file))
             os.remove(old_file)
 
 if __name__ == "__main__":
     df = load_data()
     # print(df)
     import_to_moneyforward(df)
-    delete_old_file()
