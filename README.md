@@ -23,7 +23,7 @@ docker-compose exec app python run.py
 docker-compose down
 ```
 
-Scheduling with `cron`
+Scheduling with `cron` of host machine
 
 ```crontab
 # Schedule to run at 06:02 and 18:02 everyday
