@@ -79,7 +79,7 @@ def delete_old_file():
 
         # Delete only when there is more than one file
         if len(file_list_str) > 1:
-            old_file = file_list_str[0]
+            old_file = file_list_str[1]
             os.remove(old_file)
 
 if __name__ == "__main__":
