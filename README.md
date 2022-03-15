@@ -36,6 +36,7 @@ Scheduling with `cron` of host machine
 - Columns: `store_name`, `date`, `expense`
 
 ## Preparation
+- Create `app/config.py`
 - Add `PayPay card` as a new asset in MoneyForward ME
     - [口座一覧](https://moneyforward.com/accounts/service_list) > 金融機関追加 > その他保有資産
         - 金融機関カテゴリ：`カード`
