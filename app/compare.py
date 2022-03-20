@@ -56,8 +56,8 @@ def get_diff(old_file, new_file):
 
     if (line_count) == "0":
         print("No diff found.")
+        delete_old_file()
         sys.exit()
-        sys.exit("No diff found.")
 
     diff_lines = StringIO(diff_lines)
     return diff_lines
@@ -84,9 +84,10 @@ def delete_old_file():
         file_list_str = sorted(file_list_str, reverse=True)
 
         # Delete only when there is more than one file
-        if len(file_list_str) > 1:
-            old_file = file_list_str[1]
-            print("Deleting {}".format(old_file))
+        if len(file_list_str) > 2:
+            old_files = file_list_str[2:]
+            for old_file in old_files:
+                print("Deleting {}".format(old_file))
             os.remove(old_file)
 
 if __name__ == "__main__":
