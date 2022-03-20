@@ -31,10 +31,13 @@ def load_data():
 
     if len(file_list_str) == 1:
         data = file_list_str[0]
+        print("Loading {}".format(data))
         df = pd.read_csv(data, sep="\t")
     else:
         new_file = file_list_str[0]
         old_file = file_list_str[1]
+        print("Comparing '{}' and '{}' ...".format(new_file, old_file))
+
         data = get_diff(old_file=old_file, new_file=new_file)
         columns = ["store_name", "date", "expense"]
         df = pd.read_csv(data, sep="\t", header=None, names=columns)
@@ -52,7 +55,8 @@ def get_diff(old_file, new_file):
     line_count = line_count.rstrip()
 
     if (line_count) == "0":
-        delete_old_file()
+        print("No diff found.")
+        sys.exit()
         sys.exit("No diff found.")
 
     diff_lines = StringIO(diff_lines)
