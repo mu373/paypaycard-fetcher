@@ -88,7 +88,7 @@ def delete_old_file():
             old_files = file_list_str[2:]
             for old_file in old_files:
                 print("Deleting {}".format(old_file))
-            os.remove(old_file)
+                os.remove(old_file)
 
 if __name__ == "__main__":
     df = load_data()
