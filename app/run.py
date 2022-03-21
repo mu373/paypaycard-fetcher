@@ -17,9 +17,9 @@ python /app/get-paypay-card-data.py --month {}
 result_paypay = subprocess.run(shell_command_paypay, shell=True, stdout=PIPE, text=True)
 print(result_paypay.stdout)
 
-shell_command_paypay = """
+shell_command_compare = """
 python /app/compare.py --month {} --delete-old-file
 """.format(fetch_date_month)
 
-result_paypay = subprocess.run(shell_command_paypay, shell=True, stdout=PIPE, text=True)
-print(result_paypay.stdout)
+result_compare = subprocess.run(shell_command_compare, shell=True, stdout=PIPE, text=True)
+print(result_compare.stdout)
