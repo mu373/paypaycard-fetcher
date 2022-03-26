@@ -92,6 +92,9 @@ def join_category_id(driver, df):
 
             # Join category ID to expense records
             df = pd.merge(df, df_category_preset, on='store_name', how='left')
+        else:
+            print("Category preset ({}) is not found!".format(category_preset_path))
+            print("Proceeding without preset.")
 
     return df
 
