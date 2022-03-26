@@ -23,7 +23,7 @@ docker-compose exec app python compare.py --month 202202 --delete-old-file --sla
 
 # Or, run two commands at once
 # Month will automatically be decided based on current date (see code for details)
-docker-compose exec app python run.py
+docker-compose exec app bash run.sh
 
 docker-compose down
 ```
