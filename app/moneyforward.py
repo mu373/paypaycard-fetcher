@@ -77,14 +77,13 @@ def logout(driver):
 
 def add_expense(driver, asset_name, df):
 
-    print("口座一覧")
+    print("Adding expenses...")
+
     mf_accounts_url = "https://moneyforward.com/accounts"
     driver.get(mf_accounts_url)
     time.sleep(5)
 
     driver.find_element(By.LINK_TEXT, asset_name).click()
-    print("PayPayカード")
-
 
     for index, row in df.iterrows():
 
