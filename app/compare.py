@@ -140,9 +140,11 @@ def post_to_slack(df):
             date = row["date"]
             expense = int(row["expense"])
 
+            # If category preset is given, use values from dataframe
             if 'category_large_name' in row.keys():
                 category_large_name = row['category_large_name']
                 category_middle_name = row['category_middle_name']
+            # If not, categories will internally be processed as NaN, which will be recorded as '未分類' in MoneyForward
             else:
                 category_large_name = float('NaN')
                 category_middle_name = float('NaN')
