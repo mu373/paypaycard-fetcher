@@ -8,18 +8,20 @@ import argparse
 from config import *
 import moneyforward as mf
 
+import requests
+import time
 
 # Parse arguments
 parser = argparse.ArgumentParser(description='Retrieves expense information of PayPay card')
 parser.add_argument('-m', '--month', required=True, help="Month, in YYYYMM format")
 parser.add_argument('-d', '--delete-old-file', action='store_true', help="Delete old file after importing to MoneyForward")
+parser.add_argument('-s', '--slack', action='store_true', help="Post to Slack")
 args = parser.parse_args()
 
 month = args.month
 asset_name = "PayPayカード" # MoneyForwardでの登録名
 
 import pathlib
-import pprint
 
 def load_data():
 
@@ -90,7 +92,57 @@ def delete_old_file():
                 print("Deleting {}".format(old_file))
                 os.remove(old_file)
 
+def post_to_slack(df):
+    # columns = ["store_name", "date", "expense"]
+    # df = pd.DataFrame([["テスト1", "2022/03/25", "123"],["テスト2", "2022/03/25", "123456"]], columns=columns)
+
+    if args.slack == True:
+
+        slack_post_data = ""
+        for index, row in df.iterrows():
+            store_name = row["store_name"]
+            date = row["date"]
+            expense = int(row["expense"])
+
+            slack_post_data = slack_post_data + "{date}  {store_name}  (¥{expense:,})\n".format(date=date, store_name=store_name, expense=expense)
+
+        payload = {
+            "text" : "MoneyForwardに支出が追加されました",
+            "attachments": [
+                {
+                    "color": "#36a64f",
+                    "blocks": [
+                        {
+                            "type": "section",
+                            "text": { 
+                                "type": "mrkdwn",
+                                "text": "*カード*\n{}".format(asset_name)
+                            }
+                        },
+                        {
+                            "type": "section",
+                            "text": { 
+                                "type": "mrkdwn",
+                                "text": "*ご利用内容*\n{}".format(slack_post_data)
+                            }
+                        },
+                        {
+                            "type": "context",
+                            "elements": [
+                                {
+                                    "type": "mrkdwn",
+                                    "text": "<!date^{unixtime}".format(unixtime=int(time.time())) + "^{time}|Posted timestamp>",
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+
+        requests.post(SLACK_WEBHOOK_URL, json=payload)
+
 if __name__ == "__main__":
     df = load_data()
-    # print(df)
     import_to_moneyforward(df)
+    post_to_slack(df)

@@ -18,7 +18,7 @@ result_paypay = subprocess.run(shell_command_paypay, shell=True, stdout=PIPE, te
 print(result_paypay.stdout)
 
 shell_command_compare = """
-python /app/compare.py --month {} --delete-old-file
+python /app/compare.py --month {} --delete-old-file --slack
 """.format(fetch_date_month)
 
 result_compare = subprocess.run(shell_command_compare, shell=True, stdout=PIPE, text=True)

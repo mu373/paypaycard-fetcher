@@ -14,7 +14,8 @@ docker-compose up -d
 docker-compose exec app python get-paypay-card-data.py --month 202202
 
 # Import diffs to MoneyForward
-docker-compose exec app python compare.py --month 202202 --delete-old-file
+# --slack option will enable notification to Slack
+docker-compose exec app python compare.py --month 202202 --delete-old-file --slack
 
 # Or, run two commands at once
 # Month will automatically be decided based on current date (see code for details)
@@ -37,6 +38,8 @@ Scheduling with `cron` of host machine
 
 ## Preparation
 - Create `app/config.py`
+    - Credentials for Yahoo! Japan and MoneyForward
+    - Slack incoming webhook URL (optional, only if you want to notify to Slack)
 - Add `PayPay card` as a new asset in MoneyForward ME
     - [口座一覧](https://moneyforward.com/accounts/service_list) > 金融機関追加 > その他保有資産
         - 金融機関カテゴリ：`カード`
