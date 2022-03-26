@@ -15,7 +15,7 @@ docker-compose exec app python get-paypay-card-data.py --month 202202
 
 # Import diffs to MoneyForward
 # -h, --help: Show help
-# -m MONTH, --month MONTH: Moneth, in YYYYMM format
+# -m MONTH, --month MONTH: Month, in YYYYMM format
 # -d, --delete-old-file: Delete old files for month after importing to MoneyForward (2 latest files will be keeped) (optional)
 # -s, --slack: Enable notification to Slack (optional)
 # -c, --add-category: Add category to expense record based on store name, using pre-defined CSV (/app/category.csv) (optional)
