@@ -75,6 +75,9 @@ def logout(driver):
     driver.get(mf_logout_url)
     time.sleep(2)
 
+def isNaN(obj):
+    return obj != obj
+
 def add_expense(driver, asset_name, df):
 
     print("Adding expenses...")
