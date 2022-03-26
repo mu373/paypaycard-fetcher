@@ -190,7 +190,7 @@ def post_to_slack(df):
         requests.post(SLACK_WEBHOOK_URL, json=payload)
 
 if __name__ == "__main__":
-    # df = load_data()
+    df = load_data()
     # df = mf.make_sample_df()
 
     try:
