@@ -1,3 +1,4 @@
+from cmath import nan
 import os
 import sys
 import subprocess
@@ -14,12 +15,15 @@ import time
 # Parse arguments
 parser = argparse.ArgumentParser(description='Retrieves expense information of PayPay card')
 parser.add_argument('-m', '--month', required=True, help="Month, in YYYYMM format")
-parser.add_argument('-d', '--delete-old-file', action='store_true', help="Delete old file after importing to MoneyForward")
-parser.add_argument('-s', '--slack', action='store_true', help="Post to Slack")
+parser.add_argument('-d', '--delete-old-file', action='store_true', help="Delete old files for month after importing to MoneyForward (2 latest files will be keeped)")
+parser.add_argument('-s', '--slack', action='store_true', help="Enable notification to Slack (optional)")
+parser.add_argument('-c', '--add-category', action='store_true', help="Add category to expense record based on store name, using pre-defined CSV (/app/category.csv)")
 args = parser.parse_args()
 
 month = args.month
 asset_name = "PayPayカード" # MoneyForwardでの登録名
+
+category_preset_path = '/app/category.csv'
 
 import pathlib
 
@@ -64,16 +68,44 @@ def get_diff(old_file, new_file):
     diff_lines = StringIO(diff_lines)
     return diff_lines
 
-def import_to_moneyforward(df):
-    try:
-        driver = mf.start_driver()
-        mf.login(driver=driver, username=mf_username, password=mf_password)
-        mf.add_expense(driver=driver, asset_name=asset_name, df=df)
-        mf.logout(driver=driver)
-        delete_old_file()
-    finally:
-        driver.quit()
+def get_user_category_preset(path):
+    df = pd.read_csv(path)
+    df['category_concat_name'] = df['category_large_name'].str.cat(df['category_middle_name'], sep="/")
+    return df
 
+def join_category_id(driver, df):
+
+    if args.add_category == True:
+
+        # If category.csv exists, join category ID to expense record
+        if os.path.isfile(category_preset_path):
+
+            # Driver should already be logged in to MoneyForward
+            print("Category preset ({}) found...".format(category_preset_path))
+            # Get categories from MoneyForward
+            df_category_mf = mf.get_categories(driver=driver, asset_name=asset_name)[['category_concat_name', 'category_large_id', 'category_middle_id']]
+            # Get user-defined category preset
+            df_category_preset = get_user_category_preset(category_preset_path)
+
+            # Join category ID to category preset
+            df_category_preset = pd.merge(df_category_preset, df_category_mf, on='category_concat_name', how='inner')
+
+            # Join category ID to expense records
+            df = pd.merge(df, df_category_preset, on='store_name', how='left')
+        else:
+            print("Category preset ({}) is not found!".format(category_preset_path))
+            print("Proceeding without preset.")
+
+    return df
+
+def import_to_moneyforward(driver, df):
+
+    # Driver should already be logged in to MoneyForward
+
+    # Add expense records to MoneyForward
+    mf.add_expense(driver=driver, asset_name=asset_name, df=df)
+
+    delete_old_file()
 
 def delete_old_file():
 
@@ -92,9 +124,16 @@ def delete_old_file():
                 print("Deleting {}".format(old_file))
                 os.remove(old_file)
 
+def isNaN(obj):
+    return obj != obj
+
+def get_category_name(category_name):
+    # Returns '未分類' if category_name is NaN
+    if isNaN(category_name):
+        category_name = "未分類"
+    return category_name
+
 def post_to_slack(df):
-    # columns = ["store_name", "date", "expense"]
-    # df = pd.DataFrame([["テスト1", "2022/03/25", "123"],["テスト2", "2022/03/25", "123456"]], columns=columns)
 
     if args.slack == True:
 
@@ -104,7 +143,20 @@ def post_to_slack(df):
             date = row["date"]
             expense = int(row["expense"])
 
-            slack_post_data = slack_post_data + "{date}  {store_name}  (¥{expense:,})\n".format(date=date, store_name=store_name, expense=expense)
+            # If category preset is given, use values from dataframe
+            if 'category_large_name' in row.keys():
+                category_large_name = row['category_large_name']
+                category_middle_name = row['category_middle_name']
+            # If not, categories will internally be processed as NaN, which will be recorded as '未分類' in MoneyForward
+            else:
+                category_large_name = float('NaN')
+                category_middle_name = float('NaN')
+
+            slack_post_data = slack_post_data + "{date}  {store_name}  (¥{expense:,})  {category_large}/{category_middle}\n".format(
+                date=date, store_name=store_name, expense=expense,
+                category_large=get_category_name(category_large_name),
+                category_middle=get_category_name(category_middle_name)
+            )
 
         payload = {
             "text" : "MoneyForwardに支出が追加されました",
@@ -144,5 +196,15 @@ def post_to_slack(df):
 
 if __name__ == "__main__":
     df = load_data()
-    import_to_moneyforward(df)
+    # df = mf.make_sample_df()
+
+    try:
+        driver = mf.start_driver()
+        mf.login(driver=driver, username=mf_username, password=mf_password)
+        df = join_category_id(driver=driver, df=df)
+        import_to_moneyforward(driver=driver, df=df)
+    finally:
+        mf.logout(driver=driver)
+        driver.quit()
+
     post_to_slack(df)

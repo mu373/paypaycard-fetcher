@@ -10,12 +10,13 @@ from selenium.webdriver.common.by import By
 
 def make_sample_df():
     expense_sample_data = [
-            ['ペイペイ1', '2022/01/01', '300'],
-            ['ペイペイ2', '2022/01/02', '400'],
-            ['ペイペイ3', '2022/01/03', '500'],
+        ["ペイペイ スーパー", "2022/03/25", "1000"],
+        ["ペイペイ 書店", "2022/03/25", "3000"],
+        ["ペイペイ コーヒー", "2022/03/25", "500"]
     ]
-    expense_sample_df = pd.DataFrame(expense_sample_data)
-    expense_sample_df = expense_sample_df.set_axis(['store_name', 'date', 'expense'], axis=1)
+    columns = ["store_name", "date", "expense"]
+    expense_sample_df = pd.DataFrame(expense_sample_data, columns=columns)
+
     return expense_sample_df
 
 def truncate_string(string, length, ellipsis='...'):
@@ -74,26 +75,44 @@ def logout(driver):
     driver.get(mf_logout_url)
     time.sleep(2)
 
+def isNaN(obj):
+    return obj != obj
+
 def add_expense(driver, asset_name, df):
 
-    print("口座一覧")
+    print("Adding expenses...")
+
     mf_accounts_url = "https://moneyforward.com/accounts"
     driver.get(mf_accounts_url)
     time.sleep(5)
 
     driver.find_element(By.LINK_TEXT, asset_name).click()
-    print("PayPayカード")
-
 
     for index, row in df.iterrows():
 
         usage_amount = row['expense']
         usage_date = row['date']
+        if 'category_large_name' in row.keys():
+            usage_category_large_name = row['category_large_name']
+            usage_category_large_id = row['category_large_id']
+            usage_category_middle_name = row['category_middle_name']
+            usage_category_middle_id = row['category_middle_id']
+        else:
+            usage_category_large_id = float('NaN')
+            usage_category_middle_id = float('NaN')
+            usage_category_large_name = '未分類'
+            usage_category_middle_name = '未分類'
         usage_name = truncate_string(row['store_name'], 52) # MoneyForwardの「内容」は52文字まで
 
-        print("入力 {}件目 ({}, {}, {})".format(index+1, usage_date, usage_name, usage_amount))
+        print("入力 {}件目 {}, {}, ¥{}, {}({}), {}({})".format(
+            index+1, usage_date, usage_name, usage_amount,
+            usage_category_large_name, usage_category_large_id,
+            usage_category_middle_name, usage_category_middle_id
+            )
+        )
 
-        driver.find_element(By.CLASS_NAME, "cf-new-btn").click()
+        new_button = driver.find_element(By.CLASS_NAME, "cf-new-btn")
+        driver.execute_script("arguments[0].click();", new_button)
         time.sleep(5)
         
         # Find form
@@ -103,6 +122,18 @@ def add_expense(driver, asset_name, df):
         e = form.find_element(By.NAME, "user_asset_act[updated_at]")
         e.clear()
         e.send_keys(usage_date)
+
+        # Expense category (large)
+        if not isNaN(usage_category_large_id):
+            e = form.find_element(By.NAME, "user_asset_act[large_category_id]")
+            driver.execute_script("arguments[0].type='text';",e) # Value cannot be written when type='hidden'
+            e.send_keys(str(usage_category_large_id))
+
+        # Expense category (middle)
+        if not isNaN(usage_category_middle_id):
+            e = form.find_element(By.NAME, "user_asset_act[middle_category_id]")
+            driver.execute_script("arguments[0].type='text';",e)  # Value cannot be written when type='hidden'
+            e.send_keys(str(usage_category_middle_id))
 
         # Expense amount
         e = form.find_element(By.NAME, "user_asset_act[amount]")
@@ -116,6 +147,56 @@ def add_expense(driver, asset_name, df):
         e.submit()
         time.sleep(5)
 
+
+def get_categories(driver, asset_name):
+
+    print("Getting categories...")
+
+    mf_accounts_url = "https://moneyforward.com/accounts"
+    driver.get(mf_accounts_url)
+    time.sleep(5)
+
+    driver.find_element(By.LINK_TEXT, asset_name).click()
+
+    # Click 手入力 button
+    driver.find_element(By.CLASS_NAME, "cf-new-btn").click()
+    time.sleep(2)
+
+    # Find form
+    form = driver.find_element(By.ID, "form-user-asset-act")
+
+    # Show category list
+    form.find_element(By.CLASS_NAME, "btn_l_ctg").click()
+    time.sleep(1)
+
+    categories_ul = driver.find_element(By.CSS_SELECTOR, ".dropdown-menu.main_menu")
+    categories_large_li = categories_ul.find_elements(By.CLASS_NAME, "dropdown-submenu")
+
+    categories = []
+
+    for category_large_li_item in categories_large_li:
+
+        # 大分類
+        category_large_a = category_large_li_item.find_element(By.CLASS_NAME, "l_c_name")
+        category_large_name = category_large_a.get_attribute('text')
+        category_large_id = category_large_a.get_attribute('id')
+
+        category_middle_ul = category_large_li_item.find_element(By.CLASS_NAME, "sub_menu")
+        category_middle_a = category_middle_ul.find_elements(By.CLASS_NAME, "m_c_name")
+        for category_middle_a_item in category_middle_a:
+
+            # 中分類
+            category_middle_name = category_middle_a_item.get_attribute('text')
+            category_middle_id = category_middle_a_item.get_attribute('id')
+
+            category = [category_large_name, category_large_id, category_middle_name, category_middle_id]
+            categories.append(category)
+
+    category_columns = ["category_large_name", "category_large_id", "category_middle_name", "category_middle_id"]
+    df_categories = pd.DataFrame(categories, columns=category_columns)
+    df_categories['category_concat_name'] = df_categories['category_large_name'].str.cat(df_categories['category_middle_name'], sep="/")
+
+    return (df_categories)
 
 def main():
     try:
