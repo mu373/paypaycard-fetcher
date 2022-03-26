@@ -10,12 +10,13 @@ from selenium.webdriver.common.by import By
 
 def make_sample_df():
     expense_sample_data = [
-            ['ペイペイ1', '2022/01/01', '300'],
-            ['ペイペイ2', '2022/01/02', '400'],
-            ['ペイペイ3', '2022/01/03', '500'],
+        ["ペイペイ スーパー", "2022/03/25", "1000"],
+        ["ペイペイ 書店", "2022/03/25", "3000"],
+        ["ペイペイ コーヒー", "2022/03/25", "500"]
     ]
-    expense_sample_df = pd.DataFrame(expense_sample_data)
-    expense_sample_df = expense_sample_df.set_axis(['store_name', 'date', 'expense'], axis=1)
+    columns = ["store_name", "date", "expense"]
+    expense_sample_df = pd.DataFrame(expense_sample_data, columns=columns)
+
     return expense_sample_df
 
 def truncate_string(string, length, ellipsis='...'):
