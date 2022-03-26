@@ -206,4 +206,5 @@ if __name__ == "__main__":
     finally:
         mf.logout(driver=driver)
         driver.quit()
+
     post_to_slack(df)
