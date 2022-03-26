@@ -117,6 +117,56 @@ def add_expense(driver, asset_name, df):
         time.sleep(5)
 
 
+def get_categories(driver, asset_name):
+
+    print("Getting categories...")
+
+    mf_accounts_url = "https://moneyforward.com/accounts"
+    driver.get(mf_accounts_url)
+    time.sleep(5)
+
+    driver.find_element(By.LINK_TEXT, asset_name).click()
+
+    # Click 手入力 button
+    driver.find_element(By.CLASS_NAME, "cf-new-btn").click()
+    time.sleep(2)
+
+    # Find form
+    form = driver.find_element(By.ID, "form-user-asset-act")
+
+    # Show category list
+    form.find_element(By.CLASS_NAME, "btn_l_ctg").click()
+    time.sleep(1)
+
+    categories_ul = driver.find_element(By.CSS_SELECTOR, ".dropdown-menu.main_menu")
+    categories_large_li = categories_ul.find_elements(By.CLASS_NAME, "dropdown-submenu")
+
+    categories = []
+
+    for category_large_li_item in categories_large_li:
+
+        # 大分類
+        category_large_a = category_large_li_item.find_element(By.CLASS_NAME, "l_c_name")
+        category_large_name = category_large_a.get_attribute('text')
+        category_large_id = category_large_a.get_attribute('id')
+
+        category_middle_ul = category_large_li_item.find_element(By.CLASS_NAME, "sub_menu")
+        category_middle_a = category_middle_ul.find_elements(By.CLASS_NAME, "m_c_name")
+        for category_middle_a_item in category_middle_a:
+
+            # 中分類
+            category_middle_name = category_middle_a_item.get_attribute('text')
+            category_middle_id = category_middle_a_item.get_attribute('id')
+
+            category = [category_large_name, category_large_id, category_middle_name, category_middle_id]
+            categories.append(category)
+
+    category_columns = ["category_large_name", "category_large_id", "category_middle_name", "category_middle_id"]
+    df_categories = pd.DataFrame(categories, columns=category_columns)
+    df_categories['category_concat_name'] = df_categories['category_large_name'].str.cat(df_categories['category_middle_name'], sep="/")
+
+    return (df_categories)
+
 def main():
     try:
         df = make_sample_df()
