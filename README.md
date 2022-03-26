@@ -14,8 +14,12 @@ docker-compose up -d
 docker-compose exec app python get-paypay-card-data.py --month 202202
 
 # Import diffs to MoneyForward
-# --slack option will enable notification to Slack
-docker-compose exec app python compare.py --month 202202 --delete-old-file --slack
+# -h, --help: Show help
+# -m MONTH, --month MONTH: Moneth, in YYYYMM format
+# -d, --delete-old-file: Delete old files for month after importing to MoneyForward (2 latest files will be keeped) (optional)
+# -s, --slack: Enable notification to Slack (optional)
+# -c, --add-category: Add category to expense record based on store name, using pre-defined CSV (/app/category.csv) (optional)
+docker-compose exec app python compare.py --month 202202 --delete-old-file --slack --add-category
 
 # Or, run two commands at once
 # Month will automatically be decided based on current date (see code for details)
