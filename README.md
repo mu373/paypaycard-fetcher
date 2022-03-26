@@ -40,6 +40,8 @@ Scheduling with `cron` of host machine
 - Create `app/config.py`
     - Credentials for Yahoo! Japan and MoneyForward
     - Slack incoming webhook URL (optional, only if you want to notify to Slack)
+- Create `app/category.csv` (optional)
+    - Only if you want to have expense records to be classified into pre-defined categories
 - Add `PayPay card` as a new asset in MoneyForward ME
     - [口座一覧](https://moneyforward.com/accounts/service_list) > 金融機関追加 > その他保有資産
         - 金融機関カテゴリ：`カード`
