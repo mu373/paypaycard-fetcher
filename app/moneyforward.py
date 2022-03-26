@@ -92,11 +92,27 @@ def add_expense(driver, asset_name, df):
 
         usage_amount = row['expense']
         usage_date = row['date']
+        if 'category_large_name' in row.keys():
+            usage_category_large_name = row['category_large_name']
+            usage_category_large_id = row['category_large_id']
+            usage_category_middle_name = row['category_middle_name']
+            usage_category_middle_id = row['category_middle_id']
+        else:
+            usage_category_large_id = float('NaN')
+            usage_category_middle_id = float('NaN')
+            usage_category_large_name = '未分類'
+            usage_category_middle_name = '未分類'
         usage_name = truncate_string(row['store_name'], 52) # MoneyForwardの「内容」は52文字まで
 
-        print("入力 {}件目 ({}, {}, {})".format(index+1, usage_date, usage_name, usage_amount))
+        print("入力 {}件目 {}, {}, ¥{}, {}({}), {}({})".format(
+            index+1, usage_date, usage_name, usage_amount,
+            usage_category_large_name, usage_category_large_id,
+            usage_category_middle_name, usage_category_middle_id
+            )
+        )
 
-        driver.find_element(By.CLASS_NAME, "cf-new-btn").click()
+        new_button = driver.find_element(By.CLASS_NAME, "cf-new-btn")
+        driver.execute_script("arguments[0].click();", new_button)
         time.sleep(5)
         
         # Find form
@@ -106,6 +122,18 @@ def add_expense(driver, asset_name, df):
         e = form.find_element(By.NAME, "user_asset_act[updated_at]")
         e.clear()
         e.send_keys(usage_date)
+
+        # Expense category (large)
+        if not isNaN(usage_category_large_id):
+            e = form.find_element(By.NAME, "user_asset_act[large_category_id]")
+            driver.execute_script("arguments[0].type='text';",e) # Value cannot be written when type='hidden'
+            e.send_keys(str(usage_category_large_id))
+
+        # Expense category (middle)
+        if not isNaN(usage_category_middle_id):
+            e = form.find_element(By.NAME, "user_asset_act[middle_category_id]")
+            driver.execute_script("arguments[0].type='text';",e)  # Value cannot be written when type='hidden'
+            e.send_keys(str(usage_category_middle_id))
 
         # Expense amount
         e = form.find_element(By.NAME, "user_asset_act[amount]")
