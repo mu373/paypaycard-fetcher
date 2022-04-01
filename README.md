@@ -2,6 +2,12 @@
 
 Get monthly statement of PayPay card, and import them to MoneyForward ME
 
+## Features
+- Download monthly statement of PayPay card
+- Import expense data to MoneyForward ME (only diffs would be imported from second time)
+- Automatically classify expenses into categories (optional; user-defined category list required)
+- Notify to Slack (optional; Webhook URL required)
+
 ## Usage
 
 Running from command line
