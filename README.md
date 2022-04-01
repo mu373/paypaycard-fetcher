@@ -67,5 +67,9 @@ Scheduling with `cron` of host machine
 - Simply access http://localhost:7901/ to see the actual rendering from Selenium drivers in realtime.
 - You can see details of VNC debugging at [SeleniumHQ/docker-selenium](https://github.com/SeleniumHQ/docker-selenium#using-your-browser-no-vnc-client-is-needed).
 
+## Note
+- The software will not work if 2FA is enabled for Yahoo! Japan ID and MoneyForward ID.
+- IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
 ## License
 [MIT License](https://github.com/mu373/paypaycard-fetcher/blob/master/LICENSE)
