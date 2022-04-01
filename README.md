@@ -57,7 +57,7 @@ Scheduling with `cron` of host machine
 
 ## Debugging
 - VNC can be used for debugging.
-- As defined in `docker-compose.yaml`, port 7900 of the container is mapped to port 7901 of the host machine for [noVNC](https://github.com/novnc/noVNC), a browser-based VNC client.
+- As defined in `docker-compose.yml`, port 7900 of the container is mapped to port 7901 of the host machine for [noVNC](https://github.com/novnc/noVNC), a browser-based VNC client.
 - Simply access http://localhost:7901/ to see the actual rendering from Selenium drivers in realtime.
 - You can see details of VNC debugging at [SeleniumHQ/docker-selenium](https://github.com/SeleniumHQ/docker-selenium#using-your-browser-no-vnc-client-is-needed).
 
