@@ -55,6 +55,14 @@ def format_date(date_list):
     return(date_formatted)
 
 def get_monthly_detail(driver, target_month):
+
+    # Open PayPay card member page
+    # Monthly statements cannot be loaded properly without visiting this page
+    member_top_url = "https://www.paypay-card.co.jp/member/"
+    driver.get(member_top_url)
+    time.sleep(5)
+    print("page title: {}".format(driver.title))
+
     # showSt: state (0=未確定、2=確定）
     monthly_detail_url = "https://www.paypay-card.co.jp/member/statement/monthly?targetYm={}".format(target_month)
     driver.get(monthly_detail_url)
