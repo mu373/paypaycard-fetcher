@@ -2,6 +2,12 @@
 
 Get monthly statement of PayPay card, and import them to MoneyForward ME
 
+## Features
+- Download monthly statement of PayPay card
+- Import expense data to MoneyForward ME (only diffs would be imported from second time)
+- Automatically classify expenses into categories (optional; user-defined category list required)
+- Notify to Slack (optional; Webhook URL required)
+
 ## Usage
 
 Running from command line
@@ -60,6 +66,10 @@ Scheduling with `cron` of host machine
 - As defined in `docker-compose.yml`, port 7900 of the container is mapped to port 7901 of the host machine for [noVNC](https://github.com/novnc/noVNC), a browser-based VNC client.
 - Simply access http://localhost:7901/ to see the actual rendering from Selenium drivers in realtime.
 - You can see details of VNC debugging at [SeleniumHQ/docker-selenium](https://github.com/SeleniumHQ/docker-selenium#using-your-browser-no-vnc-client-is-needed).
+
+## Note
+- The software will not work if 2FA is enabled for Yahoo! Japan ID and MoneyForward ID.
+- IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ## License
 [MIT License](https://github.com/mu373/paypaycard-fetcher/blob/master/LICENSE)
