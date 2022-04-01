@@ -35,8 +35,9 @@ def get_current_time():
     now = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9)))
     return now.strftime('%Y%m%d%H%M%S')
 
-def login(driver):
-    driver.get("https://login.yahoo.co.jp/config/login")
+def login(driver, send_keys_only=False):
+    if send_keys_only == False:
+        driver.get("https://login.yahoo.co.jp/config/login")
     driver.find_element(By.ID, "username").send_keys(paypay_username)
     driver.find_element(By.ID, "btnNext").click()
     time.sleep(1)
@@ -56,12 +57,25 @@ def format_date(date_list):
 
 def get_monthly_detail(driver, target_month):
 
+    def open_member_top():
+        member_top_url = "https://www.paypay-card.co.jp/member/"
+        driver.get(member_top_url)
+        time.sleep(5)
+        print("page title: {}".format(driver.title))
+
     # Open PayPay card member page
     # Monthly statements cannot be loaded properly without visiting this page
-    member_top_url = "https://www.paypay-card.co.jp/member/"
-    driver.get(member_top_url)
-    time.sleep(5)
-    print("page title: {}".format(driver.title))
+    is_logged_in_successful = False
+    open_member_top()
+
+    # If login screen is shown again, enter credentials
+    while is_logged_in_successful == False:
+
+        if "ログイン" in driver.title:
+            login(driver, send_keys_only=True)
+            open_member_top()
+        else:
+            is_logged_in_successful = True
 
     # showSt: state (0=未確定、2=確定）
     monthly_detail_url = "https://www.paypay-card.co.jp/member/statement/monthly?targetYm={}".format(target_month)

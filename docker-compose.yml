@@ -6,6 +6,7 @@ services:
     restart: always
     ports:
       - "4444:4444"
+      - "7901:7900"
   app:
     build: ./app
     volumes:
