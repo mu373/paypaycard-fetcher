@@ -5,6 +5,7 @@ import subprocess
 from io import StringIO
 import pandas as pd
 import argparse
+import re
 
 from config import *
 import moneyforward as mf
@@ -14,23 +15,33 @@ import time
 
 # Parse arguments
 parser = argparse.ArgumentParser(description='Retrieves expense information of PayPay card')
-parser.add_argument('-m', '--month', required=True, help="Month, in YYYYMM format")
+parser.add_argument('-m', '--month', required=True, help="Month (in YYYYMM format) or 'latest'")
 parser.add_argument('-d', '--delete-old-file', action='store_true', help="Delete old files for month after importing to MoneyForward (2 latest files will be keeped)")
 parser.add_argument('-s', '--slack', action='store_true', help="Enable notification to Slack (optional)")
 parser.add_argument('-c', '--add-category', action='store_true', help="Add category to expense record based on store name, using pre-defined CSV (/app/category.csv)")
 args = parser.parse_args()
 
-month = args.month
 asset_name = "PayPayカード" # MoneyForwardでの登録名
 
 category_preset_path = '/app/category.csv'
 
 import pathlib
 
-def load_data():
+def get_latest_month():
 
     data_dir = pathlib.Path('/data')
-    file_list = data_dir.glob('paypay_{}*.tsv'.format(month))
+    file_list = data_dir.glob('paypay_2*.tsv')
+
+    file_list_str = [str(p.resolve()) for p in file_list]
+    latest_file_name = sorted(file_list_str, reverse=True)[0]
+
+    latest_month = re.findall('/data/paypay_(\d{6})_.*.tsv', latest_file_name)[0]
+    return latest_month
+
+def load_data(target_month):
+
+    data_dir = pathlib.Path('/data')
+    file_list = data_dir.glob('paypay_{}*.tsv'.format(target_month))
 
     file_list_str = [str(p.resolve()) for p in file_list]
     file_list_str = sorted(file_list_str, reverse=True)
@@ -62,7 +73,7 @@ def get_diff(old_file, new_file):
 
     if (line_count) == "0":
         print("No diff found.")
-        delete_old_file()
+        delete_old_file(target_month=target_month)
         sys.exit()
 
     diff_lines = StringIO(diff_lines)
@@ -105,14 +116,14 @@ def import_to_moneyforward(driver, df):
     # Add expense records to MoneyForward
     mf.add_expense(driver=driver, asset_name=asset_name, df=df)
 
-    delete_old_file()
+    delete_old_file(target_month=target_month)
 
-def delete_old_file():
+def delete_old_file(target_month):
 
     if args.delete_old_file == True:
 
         data_dir = pathlib.Path('/data')
-        file_list = data_dir.glob('paypay_{}_*.tsv'.format(month))
+        file_list = data_dir.glob('paypay_{}_*.tsv'.format(target_month))
 
         file_list_str = [str(p.resolve()) for p in file_list]
         file_list_str = sorted(file_list_str, reverse=True)
@@ -195,7 +206,13 @@ def post_to_slack(df):
         requests.post(SLACK_WEBHOOK_URL, json=payload)
 
 if __name__ == "__main__":
-    df = load_data()
+
+    if args.month == 'latest':
+        target_month = get_latest_month()
+    else:
+        target_month = args.month 
+
+    df = load_data(target_month=target_month)
     # df = mf.make_sample_df()
 
     try:
