@@ -5,6 +5,7 @@ import re
 import pandas as pd
 import datetime
 import argparse
+import urllib.parse
 
 from config import *
 
@@ -55,32 +56,63 @@ def format_date(date_list):
     )
     return(date_formatted)
 
-def get_monthly_detail(driver, target_month):
+def open_member_top(driver):
+    member_top_url = "https://www.paypay-card.co.jp/member/"
+    driver.get(member_top_url)
+    time.sleep(5)
+    print("page title: {}".format(driver.title))
 
-    def open_member_top():
-        member_top_url = "https://www.paypay-card.co.jp/member/"
-        driver.get(member_top_url)
-        time.sleep(5)
-        print("page title: {}".format(driver.title))
+def open_latest_month(driver):
+
+    # Member top
+    open_member_top(driver)
+    
+    # Monthly top
+    monthly_statement_top_url = "https://www.paypay-card.co.jp/member/statement/top"
+    driver.get(monthly_statement_top_url)
+    time.sleep(5)
+    
+    # Find and open latest month page
+    month_ul = driver.find_element(By.CLASS_NAME, "index_ListSettlement_NIWTA")
+    latest_month_element = month_ul.find_elements(By.CLASS_NAME, "index_ListSettlement__list_10XmM")[0]
+    latest_month_element.click()
+    time.sleep(10)
+
+
+def get_monthly_detail(driver, month):
+
+    global target_month
 
     # Open PayPay card member page
     # Monthly statements cannot be loaded properly without visiting this page
     is_logged_in_successful = False
-    open_member_top()
+    open_member_top(driver)
 
     # If login screen is shown again, enter credentials
     while is_logged_in_successful == False:
 
         if "ログイン" in driver.title:
             login(driver, send_keys_only=True)
-            open_member_top()
+            open_member_top(driver)
         else:
             is_logged_in_successful = True
+    
+    # If argument for month is equal to 'latest', find and open latest month page
+    if month == 'latest':
 
-    # showSt: state (0=未確定、2=確定）
-    monthly_detail_url = "https://www.paypay-card.co.jp/member/statement/monthly?targetYm={}".format(target_month)
-    driver.get(monthly_detail_url)
-    time.sleep(10)
+        open_latest_month(driver)
+
+        # Get target_month (YYYYMM) from URL parameter
+        monthly_detail_url = driver.current_url
+        queries = urllib.parse.urlparse(monthly_detail_url).query
+        queries_dict = urllib.parse.parse_qs(queries)
+        target_month = queries_dict['targetYm'][0]
+    else:
+        target_month = month
+        monthly_detail_url = "https://www.paypay-card.co.jp/member/statement/monthly?targetYm={}".format(month)
+        driver.get(monthly_detail_url)
+        time.sleep(10)
+
     print("page title: {}".format(driver.title))
 
     try:
@@ -114,13 +146,15 @@ def main():
         driver = start_driver()
         login(driver=driver)
 
-        target_month = args.month
-        result_list = get_monthly_detail(driver=driver, target_month=target_month)
+        result_list = get_monthly_detail(driver=driver, month=args.month)
 
         column_name = ['store_name', 'date', 'expense']
         df = pd.DataFrame(result_list, columns=column_name)
 
         current_time = get_current_time()
+
+        # target_month (YYYYMM) will be declared as global variable inside get_monthly_detail()
+        print("target_month: {}".format(target_month))
 
         filename="../data/paypay_{}_{}.tsv".format(target_month, current_time)
         df.to_csv(filename, sep='\t', index=False)

@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
-fetch_date_month=$(python calculate-month.py)
+# fetch_date_month=$(python calculate-month.py)
+fetch_date_month="latest"
 echo "Running for $fetch_date_month"
 
 # Get expense data of PayPay card
