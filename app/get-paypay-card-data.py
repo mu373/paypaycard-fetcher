@@ -12,7 +12,7 @@ from config import *
 
 # Parse arguments
 parser = argparse.ArgumentParser(description='Retrieves expense information of PayPay card')
-parser.add_argument('-m', '--month', required=True, help="Month, in YYYYMM format")
+parser.add_argument('-m', '--month', required=True, help="Month (in YYYYMM format) or 'latest'")
 args = parser.parse_args()
 
 # Import Selenium
