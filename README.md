@@ -18,14 +18,16 @@ docker-compose up -d
 # Get monthly statement of PayPay card
 # Data will be saved as TSV in `/data` directory
 docker-compose exec app python get-paypay-card-data.py --month 202202
+docker-compose exec app python get-paypay-card-data.py --month latest
 
 # Import diffs to MoneyForward
 # -h, --help: Show help
-# -m MONTH, --month MONTH: Month, in YYYYMM format
+# -m MONTH, --month MONTH: Month (in YYYYMM format) or 'latest'
 # -d, --delete-old-file: Delete old files for month after importing to MoneyForward (2 latest files will be keeped) (optional)
 # -s, --slack: Enable notification to Slack (optional)
 # -c, --add-category: Add category to expense record based on store name, using pre-defined CSV (/app/category.csv) (optional)
 docker-compose exec app python compare.py --month 202202 --delete-old-file --slack --add-category
+docker-compose exec app python compare.py --month latest --delete-old-file --slack --add-category
 
 # Or, run two commands at once
 # Month will automatically be decided based on current date (see code for details)
@@ -38,7 +40,7 @@ Scheduling with `cron` of host machine
 
 ```crontab
 # Schedule to run at 06:02 and 18:02 everyday
-2 6,18 * * * docker-compose -f ~/paypaycard-fetcher/docker-compose.yml exec -T app python /app/run.py
+2 6,18 * * * docker-compose -f ~/paypaycard-fetcher/docker-compose.yml exec -T app bash run.sh
 ```
 
 ## Data sample
