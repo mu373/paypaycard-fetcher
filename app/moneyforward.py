@@ -71,8 +71,7 @@ def login(driver, username, password):
     time.sleep(5)
 
 def logout(driver):
-    mf_logout_url = "https://moneyforward.com/sign_out"
-    driver.get(mf_logout_url)
+    driver.find_element(By.LINK_TEXT, "ログアウト").click()
     time.sleep(2)
 
 def isNaN(obj):
