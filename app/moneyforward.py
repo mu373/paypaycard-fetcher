@@ -71,12 +71,21 @@ def login(driver, username, password):
     time.sleep(5)
 
 def logout(driver):
-    mf_logout_url = "https://moneyforward.com/sign_out"
-    driver.get(mf_logout_url)
+    driver.find_element(By.LINK_TEXT, "ログアウト").click()
     time.sleep(2)
 
 def isNaN(obj):
     return obj != obj
+
+def refresh_all(driver):
+    print("Refreshing accounts...")
+
+    mf_accounts_url = "https://moneyforward.com/accounts"
+    driver.get(mf_accounts_url)
+    time.sleep(5)
+
+    driver.find_element(By.CLASS_NAME, "aggregation-queue-all").click()
+
 
 def add_expense(driver, asset_name, df):
 
