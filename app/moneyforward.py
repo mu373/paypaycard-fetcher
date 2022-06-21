@@ -77,6 +77,16 @@ def logout(driver):
 def isNaN(obj):
     return obj != obj
 
+def refresh_all(driver):
+    print("Refreshing accounts...")
+
+    mf_accounts_url = "https://moneyforward.com/accounts"
+    driver.get(mf_accounts_url)
+    time.sleep(5)
+
+    driver.find_element(By.CLASS_NAME, "aggregation-queue-all").click()
+
+
 def add_expense(driver, asset_name, df):
 
     print("Adding expenses...")
