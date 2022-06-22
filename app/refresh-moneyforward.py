@@ -10,6 +10,8 @@ if __name__ == "__main__":
         driver = mf.start_driver()
         mf.login(driver=driver, username=mf_username, password=mf_password)
         mf.refresh_all(driver=driver)
+        mf.refresh_account(driver=driver, account_name="モバイルSuica (My JR-EAST ID)")
+        time.sleep(5)
     finally:
         mf.logout(driver=driver)
         driver.quit()

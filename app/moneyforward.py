@@ -86,6 +86,16 @@ def refresh_all(driver):
 
     driver.find_element(By.CLASS_NAME, "aggregation-queue-all").click()
 
+def refresh_account(driver, account_name):
+    print("Refreshing {}...".format(account_name))
+
+    mf_accounts_url = "https://moneyforward.com/accounts"
+    driver.get(mf_accounts_url)
+    time.sleep(5)
+
+    account_row = driver.find_element(By.CSS_SELECTOR, "#account-table").find_element(By.XPATH, "//tr[td[a[text()='{}']]]".format(account_name))
+    account_row.find_element(By.XPATH, ".//form[input[@value='更新']]").click()
+
 
 def add_expense(driver, asset_name, df):
 
