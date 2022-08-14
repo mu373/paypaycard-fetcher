@@ -71,6 +71,8 @@ def login(driver, username, password):
     time.sleep(5)
 
 def logout(driver):
+    driver.get("https://moneyforward.com/")
+    time.sleep(3)
     driver.find_element(By.LINK_TEXT, "ログアウト").click()
     time.sleep(2)
 
