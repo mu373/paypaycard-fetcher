@@ -220,8 +220,8 @@ if __name__ == "__main__":
         mf.login(driver=driver, username=mf_username, password=mf_password)
         df = join_category_id(driver=driver, df=df)
         import_to_moneyforward(driver=driver, df=df)
+        post_to_slack(df)
     finally:
-        mf.logout(driver=driver)
+        # mf.logout(driver=driver)
         driver.quit()
 
-    post_to_slack(df)
