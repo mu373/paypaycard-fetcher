@@ -39,11 +39,11 @@ def get_current_time():
 def login(driver, send_keys_only=False):
     if send_keys_only == False:
         driver.get("https://login.yahoo.co.jp/config/login")
-    driver.find_element(By.ID, "username").send_keys(paypay_username)
-    driver.find_element(By.ID, "btnNext").click()
+    driver.find_element(By.ID, "login_handle").send_keys(paypay_username)
+    driver.find_element(By.XPATH, "//button[text()='次へ']").click()
     time.sleep(1)
-    driver.find_element(By.ID, "passwd").send_keys(paypay_password)
-    driver.find_element(By.ID, "btnSubmit").click()
+    driver.find_element(By.ID, "password").send_keys(paypay_password)
+    driver.find_element(By.XPATH, "//button[text()='ログイン']").click()
     print("Logging in...")
     time.sleep(1)
 
