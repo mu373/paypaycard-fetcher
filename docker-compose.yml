@@ -1,7 +1,7 @@
 version: "3"
 services:
   chrome:
-    image: selenium/standalone-chrome:4.1.2-20220217
+    image: selenium/standalone-chrome:4.11
     shm_size: 2gb
     restart: always
     ports:
