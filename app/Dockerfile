@@ -1,4 +1,4 @@
-FROM python:3.10.2-slim
+FROM python:3.11-slim
 
 ENV PYTHONIOENCODING utf-8
 ENV TZ="Asia/Tokyo"
