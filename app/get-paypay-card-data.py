@@ -73,8 +73,9 @@ def open_latest_month(driver):
     time.sleep(5)
     
     # Find and open latest month page
-    month_ul = driver.find_element(By.CLASS_NAME, "index_ListSettlement_NIWTA")
-    latest_month_element = month_ul.find_elements(By.CLASS_NAME, "index_ListSettlement__list_10XmM")[0]
+    # month_ul = driver.find_element(By.CLASS_NAME, "index_ListSettlement_NIWTA")
+    month_ul = driver.find_element(By.CLASS_NAME, "_ListSettlement_1kf6q_8")
+    latest_month_element = month_ul.find_elements(By.CLASS_NAME, "_ListSettlement__list_1kf6q_8")[0]
     latest_month_element.click()
     time.sleep(10)
 
@@ -116,22 +117,23 @@ def get_monthly_detail(driver, month):
     print("page title: {}".format(driver.title))
 
     try:
-        usage_ul = driver.find_element(By.CLASS_NAME, "index_ListSettlement_NIWTA")
+        # usage_ul = driver.find_element(By.CLASS_NAME, "index_ListSettlement_NIWTA")
+        usage_ul = driver.find_element(By.CLASS_NAME, "_ListSettlement_1kf6q_8")
     except NoSuchElementException:
         sys.exit("No statement was found for the month.")
     
-    usage_li = usage_ul.find_elements(By.CLASS_NAME, "index_ListSettlement__list_10XmM")
+    usage_li = usage_ul.find_elements(By.CLASS_NAME, "_ListSettlement__list_1kf6q_8")
     result_list = []
 
     for usage_li_item in usage_li:
 
-        store_name = usage_li_item.find_element(By.CLASS_NAME, "index_ListSettlement__labelMain_20cjQ").text
+        store_name = usage_li_item.find_element(By.CLASS_NAME, "_ListSettlement__labelMain_1kf6q_43").text
 
-        usage_date = usage_li_item.find_element(By.CLASS_NAME, "index_ListSettlement__date_1jxtk").text
+        usage_date = usage_li_item.find_element(By.CLASS_NAME, "_ListSettlement__date_1kf6q_53").text
         usage_date_list = re.findall('(.*)年(.*)月(.*)日', usage_date)[0]
         usage_date_formatted = format_date(usage_date_list)
 
-        price = usage_li_item.find_element(By.CLASS_NAME, "index_ListSettlement__summary_eJl4_").text
+        price = usage_li_item.find_element(By.CLASS_NAME, "_ListSettlement__summary_1kf6q_61").text
         price = re.sub("\n|円|,", "", price)
 
         result = [store_name, usage_date_formatted, price]

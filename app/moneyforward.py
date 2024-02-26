@@ -35,13 +35,13 @@ def login(driver, username, password):
 
     # Login to MoneyForward ID
     print("Opening login page")
-    mf_id_login_url = "https://id.moneyforward.com/sign_in/email"
+    mf_id_login_url = "https://id.moneyforward.com/sign_in"
     driver.get(mf_id_login_url)
     time.sleep(4)
 
     # Enter E-mail
-    title = driver.find_element(By.CLASS_NAME, "title").text
-    print(title)
+    # title = driver.find_element(By.CLASS_NAME, "title").text
+    # print(title)
 
     e = driver.find_element(By.NAME, "mfid_user[email]")
     e.clear()
@@ -50,24 +50,19 @@ def login(driver, username, password):
 
     # Enter Password
     time.sleep(4)
-    title = driver.find_element(By.CLASS_NAME, "title").text
-    print(title)
+    # title = driver.find_element(By.CLASS_NAME, "title").text
+    # print(title)
     e = driver.find_element(By.NAME, "mfid_user[password]")
     e.send_keys(password)
     print("Logging in ...")
     e.submit()
     time.sleep(5)
 
-    # Login to MoneyForward ME
-    mf_me_login_url = "https://moneyforward.com/sign_in/"
-    e = driver.get(mf_me_login_url)
-    
-    # Click "このアカウントを使用する"
+    # Select account
+    mf_accounts_url = "https://moneyforward.com/accounts"
+    driver.get(mf_accounts_url)
     time.sleep(5)
-    title = driver.find_element(By.CLASS_NAME, "title").text
-    print(title)
-    e = driver.find_element(By.CLASS_NAME, "submitBtn")
-    e.submit()
+    driver.find_element(By.NAME, "mfid_user[email]").find_element(By.XPATH, "..").click()
     time.sleep(5)
 
 def logout(driver):
